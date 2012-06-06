@@ -54,3 +54,32 @@ class ServerTests(TestCase):
         s = self.TestServer()
         self.assertTrue(s.check_request_signature(uri, body=body,
             headers=headers))
+
+    def test_server_query_request(self):
+        c = Client(self.CLIENT_KEY,
+            client_secret=self.CLIENT_SECRET,
+            resource_owner_key=self.RESOURCE_OWNER_KEY,
+            resource_owner_secret=self.RESOURCE_OWNER_SECRET,
+            signature_type=SIGNATURE_TYPE_QUERY)
+
+        uri, headers, body = c.sign(u'http://server.example.com:80/init')
+
+        s = self.TestServer()
+        self.assertTrue(s.check_request_signature(uri, body=body,
+            headers=headers))
+
+    def test_server_body_request(self):
+        c = Client(self.CLIENT_KEY,
+            client_secret=self.CLIENT_SECRET,
+            resource_owner_key=self.RESOURCE_OWNER_KEY,
+            resource_owner_secret=self.RESOURCE_OWNER_SECRET,
+            signature_type=SIGNATURE_TYPE_BODY)
+
+        uri, headers, body = c.sign(u'http://server.example.com:80/init',
+            http_method=u'POST',
+            body=u'data_param_foo=foo&data_param_1=1',
+            headers={u'Content-Type': u'application/x-www-form-urlencoded'})
+
+        s = self.TestServer()
+        self.assertTrue(s.check_request_signature(uri,
+            http_method=u'POST', body=body, headers=headers))

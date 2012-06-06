@@ -342,7 +342,7 @@ class Server(object):
                 verifier=verifier)
 
         request = Request(uri, http_method, body, headers)
-        request.oauth_params = params
+        request.oauth_params = params.items()
 
         client_signature = oauth_client.get_oauth_signature(request)
 

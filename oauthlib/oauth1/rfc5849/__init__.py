@@ -342,7 +342,12 @@ class Server(object):
                 verifier=verifier)
 
         request = Request(uri, http_method, body, headers)
-        request.oauth_params = params.items()
+        # OAuth parameters transmitted in the query or entity-body are
+        # already present in the parameter sources (section 3.4.1.3.1)
+        # used to construct the signature base string.
+        # FIXME: This should probably be handled by Request.
+        if signature_type == SIGNATURE_TYPE_AUTH_HEADER:
+            request.oauth_params = params.items()
 
         client_signature = oauth_client.get_oauth_signature(request)
 
